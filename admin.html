@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang-key="adminTitle">Admin Dashboard | Barber Bliss</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./src/index.css">
+    <style>
+        /* Lucide-like SVG icons for Vanilla HTML */
+        .icon {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            stroke-width: 2;
+            stroke: currentColor;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground font-sans antialiased">
+
+    <!-- Header for Admin Page -->
+    <header class="sticky top-0 z-50 w-full bg-background/90 backdrop-blur-sm shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold text-primary-foreground bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-gray-400">Barber Bliss Admin</a>
+            <div class="flex items-center space-x-4">
+                <button id="themeToggle" class="btn-secondary p-2 rounded-full">
+                    <svg id="moonIcon" class="icon" fill="none" viewBox="0 0 24 24" style="display: none;">
+                        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+                    <svg id="sunIcon" class="icon" fill="none" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+                    </svg>
+                </button>
+                <button id="logoutBtn" class="btn-secondary" data-lang-key="logoutBtn" style="display: none;">Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12 flex-grow">
+        <!-- Login Modal -->
+        <div id="loginModal" class="modal-overlay" style="display: flex;">
+            <div class="modal-content">
+                <h3 class="modal-title mb-4" data-lang-key="adminLoginTitle">Admin Login</h3>
+                <form id="adminLoginForm" class="space-y-4">
+                    <div>
+                        <label for="adminPin" class="label-field block mb-2" data-lang-key="pinLabel">Admin PIN</label>
+                        <input type="password" id="adminPin" class="input-field w-full" placeholder="Enter PIN" required>
+                    </div>
+                    <p id="loginError" class="text-red-500 hidden" data-lang-key="loginErrorMsg">Invalid PIN. Please try again.</p>
+                    <button type="submit" class="btn-primary w-full" data-lang-key="loginBtn">Login</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboardContent" class="hidden">
+            <h1 class="text-4xl font-bold mb-8 text-yellow-400" data-lang-key="dashboardTitle">Welcome, Admin!</h1>
+
+            <!-- Notification Settings -->
+            <div class="bg-card/80 glassmorphic p-6 rounded-xl shadow-lg mb-8 flex items-center justify-between animated-gradient-border">
+                <div class="flex items-center gap-4">
+                    <svg class="icon w-6 h-6 text-yellow-400" fill="none" viewBox="0 0 24 24">
+                        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 01-3.46 0"></path>
+                    </svg>
+                    <span class="text-lg font-medium" data-lang-key="enableNotifications">Enable Desktop Notifications</span>
+                </div>
+                <button id="notificationToggle" role="switch" class="switch-root" data-state="unchecked">
+                    <span class="switch-thumb"></span>
+                </button>
+            </div>
+
+            <!-- Overview Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-card/80 glassmorphic p-6 rounded-xl shadow-lg animated-gradient-border grid-hover-3d">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold" data-lang-key="totalBookings">Total Bookings</h3>
+                        <svg class="icon w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24">
+                            <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"></path>
+                        </svg>
+                    </div>
+                    <p id="totalBookingsCount" class="text-5xl font-bold text-yellow-400">0</p>
+                </div>
+                <div class="bg-card/80 glassmorphic p-6 rounded-xl shadow-lg animated-gradient-border grid-hover-3d">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold" data-lang-key="pendingBookings">Pending Bookings</h3>
+                        <svg class="icon w-6 h-6 text-orange-400" fill="none" viewBox="0 0 24 24">
+                            <path d="M10 20.7a8 8 0 100-16 8 8 0 000 16z"></path><path d="M12 7v5l2.5 1.5"></path>
+                        </svg>
+                    </div>
+                    <p id="pendingBookingsCount" class="text-5xl font-bold text-yellow-400">0</p>
+                </div>
+                <div class="bg-card/80 glassmorphic p-6 rounded-xl shadow-lg animated-gradient-border grid-hover-3d">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold" data-lang-key="revenueEstimate">Revenue Estimate</h3>
+                        <svg class="icon w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24">
+                            <path d="M12 2v20M17 5H7l5 5-5 5h10"></path>
+                        </svg>
+                    </div>
+                    <p id="revenueEstimate" class="text-5xl font-bold text-yellow-400">$0</p>
+                </div>
+            </div>
+
+            <!-- Recent Bookings Table -->
+            <div class="bg-card/80 glassmorphic p-6 rounded-xl shadow-lg animated-gradient-border">
+                <h3 class="text-2xl font-bold mb-6" data-lang-key="recentBookingsTitle">Recent Bookings</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left table-auto">
+                        <thead>
+                            <tr class="border-b border-input">
+                                <th class="py-3 px-4 font-semibold text-muted-foreground" data-lang-key="tableHeaderName">Client Name</th>
+                                <th class="py-3 px-4 font-semibold text-muted-foreground" data-lang-key="tableHeaderService">Service</th>
+                                <th class="py-3 px-4 font-semibold text-muted-foreground" data-lang-key="tableHeaderDate">Date</th>
+                                <th class="py-3 px-4 font-semibold text-muted-foreground" data-lang-key="tableHeaderTime">Time</th>
+                                <th class="py-3 px-4 font-semibold text-muted-foreground" data-lang-key="tableHeaderStatus">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingsTableBody">
+                            <!-- Bookings will be dynamically loaded here -->
+                            <tr>
+                                <td class="py-3 px-4" colspan="5" data-lang-key="loadingBookings">Loading bookings...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-background border-t border-input py-8 px-6 text-center text-muted-foreground">
+        <p>&copy; 2024 Barber Bliss. <span data-lang-key="rightsReserved">All rights reserved.</span></p>
+    </footer>
+
+    <script>
+        const adminTranslations = {
+            en: {
+                adminTitle: "Admin Dashboard | Barber Bliss",
+                adminLoginTitle: "Admin Login",
+                pinLabel: "Admin PIN",
+                loginBtn: "Login",
+                loginErrorMsg: "Invalid PIN. Please try again.",
+                logoutBtn: "Logout",
+                dashboardTitle: "Welcome, Admin!",
+                enableNotifications: "Enable Desktop Notifications",
+                totalBookings: "Total Bookings",
+                pendingBookings: "Pending Bookings",
+                revenueEstimate: "Revenue Estimate",
+                recentBookingsTitle: "Recent Bookings",
+                tableHeaderName: "Client Name",
+                tableHeaderService: "Service",
+                tableHeaderDate: "Date",
+                tableHeaderTime: "Time",
+                tableHeaderStatus: "Status",
+                loadingBookings: "Loading bookings...",
+                noBookingsFound: "No bookings found.",
+                newBookingNotificationTitle: "New Booking!",
+                newBookingNotificationBody: "A new booking has been made by {customer_name} for {service_name} on {booking_date} at {booking_time}.",
+                permissionDenied: "Permission denied for notifications.",
+                rightsReserved: "All rights reserved."
+            },
+            he: {
+                adminTitle: "פאנל ניהול | ברבר בליס",
+                adminLoginTitle: "כניסת מנהל",
+                pinLabel: "קוד מנהל",
+                loginBtn: "התחבר",
+                loginErrorMsg: "קוד שגוי. אנא נסה שוב.",
+                logoutBtn: "התנתק",
+                dashboardTitle: "ברוך הבא, מנהל!",
+                enableNotifications: "אפשר התראות שולחן עבודה",
+                totalBookings: "סה\"כ הזמנות",
+                pendingBookings: "הזמנות ממתינות",
+                revenueEstimate: "הכנסה משוערת",
+                recentBookingsTitle: "הזמנות אחרונות",
+                tableHeaderName: "שם לקוח",
+                tableHeaderService: "שירות",
+                tableHeaderDate: "תאריך",
+                tableHeaderTime: "שעה",
+                tableHeaderStatus: "סטטוס",
+                loadingBookings: "טוען הזמנות...",
+                noBookingsFound: "לא נמצאו הזמנות.",
+                newBookingNotificationTitle: "הזמנה חדשה!",
+                newBookingNotificationBody: "הזמנה חדשה התקבלה מ{customer_name} עבור {service_name} בתאריך {booking_date} בשעה {booking_time}.",
+                permissionDenied: "הרשאה נדחתה עבור התראות.",
+                rightsReserved: "כל הזכויות שמורות."
+            }
+        };
+
+        const serviceNames = {
+            general: "The Classic Cut",
+            beard_trim: "Beard Trim & Shape",
+            royal_shave: "Royal Shave"
+        };
+        const servicePrices = {
+            general: 25,
+            beard_trim: 15,
+            royal_shave: 35
+        };
+
+        let currentLang = localStorage.getItem('lang') || 'en';
+        let currentTheme = localStorage.getItem('theme') || 'light';
+        let notificationIntervalId = null;
+
+        // --- Utility Functions ---
+        function updateAdminContent() {
+            document.querySelectorAll('[data-lang-key]').forEach(element => {
+                const key = element.getAttribute('data-lang-key');
+                if (adminTranslations[currentLang] && adminTranslations[currentLang][key]) {
+                    if (element.tagName === 'TITLE') {
+                        document.title = adminTranslations[currentLang][key];
+                    } else {
+                        element.textContent = adminTranslations[currentLang][key];
+                    }
+                }
+            });
+            document.documentElement.setAttribute('lang', currentLang);
+            document.documentElement.classList.toggle('rtl', currentLang === 'he');
+        }
+
+        function applyTheme() {
+            document.documentElement.classList.remove('light', 'dark');
+            document.documentElement.classList.add(currentTheme);
+            const moonIcon = document.getElementById('moonIcon');
+            const sunIcon = document.getElementById('sunIcon');
+            if (currentTheme === 'dark') {
+                moonIcon.style.display = 'block';
+                sunIcon.style.display = 'none';
+            } else {
+                moonIcon.style.display = 'none';
+                sunIcon.style.display = 'block';
+            }
+        }
+
+        function getServiceTranslatedName(serviceId) {
+            // This is a simplified approach. In a real app, service names would also be in translations.
+            // For now, use English name or lookup from default list.
+            return serviceNames[serviceId] || serviceId;
+        }
+
+        // --- Theme Toggle ---
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            applyTheme();
+        });
+
+        // --- Admin Authentication ---
+        const loginModal = document.getElementById('loginModal');
+        const adminLoginForm = document.getElementById('adminLoginForm');
+        const adminPinInput = document.getElementById('adminPin');
+        const loginError = document.getElementById('loginError');
+        const dashboardContent = document.getElementById('dashboardContent');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        async function verifyAdminPin(pinAttempt) {
+            try {
+                const response = await fetch('/api/verify-admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ projectId: "ZQP3WJFYiezz7WXhf3Kh", uid: "5SqPaAi31vSNNoJhGFeN9bJU4Lf1", pinAttempt: pinAttempt })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.token) {
+                        localStorage.setItem('adminToken', data.token);
+                        return true;
+                    }
+                }
+                return false;
+            } catch (error) {
+                console.error('Admin verification failed:', error);
+                return false;
+            }
+        }
+
+        adminLoginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            loginError.classList.add('hidden');
+            const pinAttempt = adminPinInput.value;
+
+            const isAuthenticated = await verifyAdminPin(pinAttempt);
+
+            if (isAuthenticated) {
+                loginModal.style.display = 'none';
+                dashboardContent.classList.remove('hidden');
+                logoutBtn.style.display = 'inline-flex';
+                fetchAndDisplayBookings();
+                initializeNotificationToggle(); // Initialize notification state after login
+            } else {
+                loginError.classList.remove('hidden');
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('notificationsEnabled'); // Clear notification preference
+            localStorage.removeItem('last_notified_id'); // Clear last notified booking
+            if (notificationIntervalId) {
+                clearInterval(notificationIntervalId);
+                notificationIntervalId = null;
+            }
+            dashboardContent.classList.add('hidden');
+            logoutBtn.style.display = 'none';
+            loginModal.style.display = 'flex';
+            adminPinInput.value = ''; // Clear PIN input
+            loginError.classList.add('hidden'); // Hide any previous error
+            document.getElementById('notificationToggle').setAttribute('data-state', 'unchecked');
+        });
+
+        // Check if already authenticated on page load
+        if (localStorage.getItem('adminToken')) {
+            loginModal.style.display = 'none';
+            dashboardContent.classList.remove('hidden');
+            logoutBtn.style.display = 'inline-flex';
+            fetchAndDisplayBookings();
+            initializeNotificationToggle();
+        } else {
+            loginModal.style.display = 'flex';
+        }
+
+        // --- Fetch and Display Bookings ---
+        const bookingsTableBody = document.getElementById('bookingsTableBody');
+        const totalBookingsCount = document.getElementById('totalBookingsCount');
+        const pendingBookingsCount = document.getElementById('pendingBookingsCount');
+        const revenueEstimate = document.getElementById('revenueEstimate');
+
+        async function fetchAndDisplayBookings() {
+            bookingsTableBody.innerHTML = `<tr><td class="py-3 px-4" colspan="5">${adminTranslations[currentLang].loadingBookings}</td></tr>`;
+            try {
+                const response = await fetch('https://ammoue-ai.vercel.app/api/booking?business_id=biz_r9wz3lgd');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const rawData = await response.json();
+                const bookings = Array.isArray(rawData) ? rawData : (rawData.bookings || []); // Defensive data handling
+
+                bookingsTableBody.innerHTML = ''; // Clear loading message
+
+                if (bookings.length === 0) {
+                    bookingsTableBody.innerHTML = `<tr><td class="py-3 px-4 text-center text-muted-foreground" colspan="5">${adminTranslations[currentLang].noBookingsFound}</td></tr>`;
+                    totalBookingsCount.textContent = '0';
+                    pendingBookingsCount.textContent = '0';
+                    revenueEstimate.textContent = '$0';
+                    return;
+                }
+
+                // Sort bookings by date and time, newest first
+                bookings.sort((a, b) => {
+                    const dateA = new Date(`${a.booking_date}T${a.booking_time}`);
+                    const dateB = new Date(`${b.booking_date}T${b.booking_time}`);
+                    return dateB - dateA;
+                });
+
+                let total = bookings.length;
+                let pending = 0;
+                let revenue = 0;
+
+                bookings.forEach(booking => {
+                    const bookingDate = new Date(`${booking.booking_date}T${booking.booking_time}`);
+                    const now = new Date();
+                    const status = bookingDate > now ? 'Upcoming' : 'Completed'; // Simplified status logic
+
+                    if (status === 'Upcoming') {
+                        pending++;
+                    }
+                    revenue += servicePrices[booking.service_id] || 0;
+
+                    const row = document.createElement('tr');
+                    row.classList.add('border-b', 'border-input/50', 'hover:bg-accent/20');
+                    row.innerHTML = `
+                        <td class="py-3 px-4 font-medium">${booking.customer_name}</td>
+                        <td class="py-3 px-4 text-muted-foreground">${getServiceTranslatedName(booking.service_id)}</td>
+                        <td class="py-3 px-4">${booking.booking_date}</td>
+                        <td class="py-3 px-4">${booking.booking_time}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold
+                                ${status === 'Upcoming' ? 'bg-blue-500/20 text-blue-400' : 'bg-green-500/20 text-green-400'}">
+                                ${status}
+                            </span>
+                        </td>
+                    `;
+                    bookingsTableBody.appendChild(row);
+                });
+
+                totalBookingsCount.textContent = total;
+                pendingBookingsCount.textContent = pending;
+                revenueEstimate.textContent = `$${revenue}`;
+
+                // Update last notified ID after fetching to prevent immediate notification on page load
+                if (bookings.length > 0) {
+                    localStorage.setItem('last_notified_id', bookings[0].id);
+                }
+
+            } catch (error) {
+                console.error('Error fetching bookings:', error);
+                bookingsTableBody.innerHTML = `<tr><td class="py-3 px-4 text-red-500" colspan="5">Error loading bookings.</td></tr>`;
+            }
+        }
+
+        // --- Desktop Notifications ---
+        const notificationToggle = document.getElementById('notificationToggle');
+
+        function requestNotificationPermission() {
+            if (!("Notification" in window)) {
+                console.warn("This browser does not support desktop notification");
+                return;
+            }
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    localStorage.setItem('notificationsEnabled', 'true');
+                    notificationToggle.setAttribute('data-state', 'checked');
+                    startBookingPolling();
+                } else {
+                    localStorage.setItem('notificationsEnabled', 'false');
+                    notificationToggle.setAttribute('data-state', 'unchecked');
+                    clearInterval(notificationIntervalId);
+                    notificationIntervalId = null;
+                    alert(adminTranslations[currentLang].permissionDenied);
+                }
+            });
+        }
+
+        function initializeNotificationToggle() {
+            const notificationsEnabled = localStorage.getItem('notificationsEnabled') === 'true';
+            notificationToggle.setAttribute('data-state', notificationsEnabled ? 'checked' : 'unchecked');
+            if (notificationsEnabled) {
+                startBookingPolling();
+            } else {
+                if (notificationIntervalId) {
+                    clearInterval(notificationIntervalId);
+                    notificationIntervalId = null;
+                }
+            }
+        }
+
+        notificationToggle.addEventListener('click', () => {
+            const isChecked = notificationToggle.getAttribute('data-state') === 'checked';
+            if (!isChecked) {
+                requestNotificationPermission();
+            } else {
+                localStorage.setItem('notificationsEnabled', 'false');
+                notificationToggle.setAttribute('data-state', 'unchecked');
+                if (notificationIntervalId) {
+                    clearInterval(notificationIntervalId);
+                    notificationIntervalId = null;
+                }
+            }
+        });
+
+        async function checkNewBookings() {
+            if (localStorage.getItem('adminToken') && localStorage.getItem('notificationsEnabled') === 'true' && Notification.permission === "granted") {
+                try {
+                    const response = await fetch('https://ammoue-ai.vercel.app/api/booking?business_id=biz_r9wz3lgd');
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    const rawData = await response.json();
+                    const bookings = Array.isArray(rawData) ? rawData : (rawData.bookings || []);
+
+                    if (bookings.length === 0) return;
+
+                    // Sort to ensure we get the latest booking consistently
+                    bookings.sort((a, b) => {
+                        const dateA = new Date(a.created_at); // Assuming 'created_at' for when booking was made
+                        const dateB = new Date(b.created_at);
+                        return dateB - dateA;
+                    });
+
+                    const latestBooking = bookings[0];
+                    const lastNotifiedId = localStorage.getItem('last_notified_id');
+
+                    if (latestBooking.id !== lastNotifiedId) {
+                        const title = adminTranslations[currentLang].newBookingNotificationTitle;
+                        const body = adminTranslations[currentLang].newBookingNotificationBody
+                            .replace('{customer_name}', latestBooking.customer_name)
+                            .replace('{service_name}', getServiceTranslatedName(latestBooking.service_id))
+                            .replace('{booking_date}', latestBooking.booking_date)
+                            .replace('{booking_time}', latestBooking.booking_time);
+                        
+                        new Notification(title, { body: body, icon: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'black\'%3E%3Cpath d=\'M18 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2zM9 10a1 1 0 011-1h4a1 1 0 010 2h-4a1 1 0 01-1-1zm0 4a1 1 0 011-1h4a1 1 0 010 2h-4a1 1 0 01-1-1z\'/%3E%3C/svg%3E' });
+                        localStorage.setItem('last_notified_id', latestBooking.id);
+                        fetchAndDisplayBookings(); // Refresh dashboard data
+                    }
+                } catch (error) {
+                    console.error('Error checking for new bookings:', error);
+                }
+            }
+        }
+
+        function startBookingPolling() {
+            if (notificationIntervalId) {
+                clearInterval(notificationIntervalId);
+            }
+            notificationIntervalId = setInterval(checkNewBookings, 60000); // Poll every 60 seconds
+        }
+
+        // --- Initial Load ---
+        window.addEventListener('load', () => {
+            updateAdminContent();
+            applyTheme();
+        });
+    </script>
+</body>
+</html>

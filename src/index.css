@@ -1,0 +1,238 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 47.4% 11.2%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 47.4% 11.2%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 47.4% 11.2%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 47.4% 11.2%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Montserrat', sans-serif;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInFromLeft {
+  from { opacity: 0; transform: translateX(-100px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes border-flicker {
+  0%, 100% { border-color: hsla(210, 40%, 98%, 0.1); }
+  50% { border-color: hsla(210, 40%, 98%, 0.5); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.animate-slideInFromLeft {
+  animation: slideInFromLeft 0.8s ease-out forwards;
+}
+
+.animated-gradient-border {
+  position: relative;
+  isolation: isolate;
+}
+
+.animated-gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px; /* Adjust border thickness */
+  border-radius: inherit;
+  padding: 2px; /* Inner padding to create the border */
+  background: linear-gradient(45deg, #FFD700, #C0C0C0, #FFD700); /* Gold & Silver gradient */
+  background-size: 200% 200%;
+  animation: gradient-shift 4s linear infinite;
+  z-index: -1;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.glassmorphic {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dark .glassmorphic {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.grid-hover-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+}
+
+.grid-hover-3d:hover {
+  transform: translateZ(20px) rotateX(2deg) rotateY(2deg);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.dark .grid-hover-3d:hover {
+  box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
+}
+
+/* Typing effect cursor */
+.typing-effect::after {
+  content: '|';
+  animation: blink-caret 0.75s step-end infinite;
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: hsl(var(--foreground)) }
+}
+
+.rtl {
+  direction: rtl;
+}
+.rtl .text-left {
+  text-align: right;
+}
+.rtl .text-right {
+  text-align: left;
+}
+.rtl .ml-auto {
+  margin-right: auto;
+  margin-left: 0;
+}
+.rtl .mr-auto {
+  margin-left: auto;
+  margin-right: 0;
+}
+.rtl .pl-4 {
+  padding-right: 1rem;
+  padding-left: 0;
+}
+.rtl .pr-4 {
+  padding-left: 1rem;
+  padding-right: 0;
+}
+.rtl .left-0 {
+  right: 0;
+  left: auto;
+}
+.rtl .right-0 {
+  left: 0;
+  right: auto;
+}
+/* More specific RTL adjustments for icons and alignments */
+.rtl .flex-row-reverse {
+  flex-direction: row; /* Overriding specific usage */
+}
+.rtl .flex-row {
+  flex-direction: row-reverse;
+}
+
+/* General button styling for admin panel/modals */
+.btn-primary {
+  @apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50
+  bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50
+  bg-secondary text-secondary-foreground shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2;
+}
+
+.input-field {
+  @apply flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.label-field {
+  @apply text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
+}
+
+/* Modal styling */
+.modal-overlay {
+  @apply fixed inset-0 z-50 bg-black/80 flex items-center justify-center;
+}
+.modal-content {
+  @apply bg-background text-foreground p-6 rounded-lg shadow-lg max-w-sm w-full relative;
+}
+.modal-header {
+  @apply flex items-center justify-between pb-4 mb-4 border-b border-input;
+}
+.modal-title {
+  @apply text-lg font-semibold;
+}
+.modal-close {
+  @apply absolute top-4 right-4 text-muted-foreground hover:text-foreground;
+}
+.modal-footer {
+  @apply flex justify-end gap-2 pt-4 mt-4 border-t border-input;
+}
+
+.switch-root {
+  @apply peer inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input;
+}
+.switch-thumb {
+  @apply pointer-events-none block h-4 w-4 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0;
+}
